@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>HOMEPAGE</title>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css"
+            rel="stylesheet"
+    />
+</head>
+<body class="container">
+
+<h1 th:if="${not #lists.isEmpty(todos)}" class="text-center my-5 text-primary">Todo list Found</h1>
+<table th:if="${not #lists.isEmpty(todos)}" class="table align-middle mb-0 bg-white container" style="table-layout : fixed; text-align: center">
+    <thead class="bg-light">
+    <tr>
+        <th>#ID</th>
+        <th>Task</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Created Date</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="todo : ${todos}">
+        <th th:text="${todo.id}"></th>
+        <td th:text="${todo.task}"></td>
+        <td th:text="${todo.description}"></td>
+        <td>
+            <span th:if="${todo.isDone()}" class="badge badge-success rounded-pill d-inline">Done</span>
+            <span th:unless="${todo.isDone()}" class="badge badge-danger rounded-pill d-inline">Not Done</span>
+        </td>
+        <td th:text="${#temporals.format(todo.createdAt, 'yyyy-MM-dd')}">Formatted Date</td>
+        <td>
+            <button type="button" class="btn btn-primary">Edit</button>
+            <button type="button" class="btn btn-danger" >Delete</button>
+            <form action="/todo/markDone" method="get">
+                <input type="hidden" name="id" th:value="${todo.id}" />
+                <button type="submit" class="btn btn-success mt-3">Mark Done</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div th:if="${#lists.isEmpty(todos)}" class="text-center mt-5">
+    <h1 class="text-danger">No todo list found.</h1>
+</div>
+
+<form action="/todo" method="get" class="text-center">
+    <button type="submit" class="btn btn-primary mt-3 ">Back
+    </button>
+</form>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"></script>
+</body>
+</html>

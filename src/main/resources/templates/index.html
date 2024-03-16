@@ -11,6 +11,25 @@
     <div class="container">
         <h1 class="text-center mb-3 mt-5">All Users List</h1>
 
+        <!-- Search Form -->
+        <form action="/student/search" method="get" class="mb-3">
+            <div class="row g-3">
+                <div class="col-auto">
+                    <label for="task" class="visually-hidden">Task</label>
+                    <input type="text" class="form-control" id="task1" name="task" placeholder="Search by task">
+                </div>
+                <div class="col-auto">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="isDone" name="isDone">
+                        <label class="form-check-label" for="isDone">Is Done</label>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </form>
+
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
             Add Product
         </button>
@@ -22,6 +41,7 @@
                 <th scope="col">ID</th>
                 <th scope="col">Student Name</th>
                 <th scope="col">Student Task</th>
+                <th scope="col">Description</th>
                 <th scope="col">isDone</th>
                 <th scope="col">createdAt</th>
                 <th scope="col">Actions</th>
@@ -32,14 +52,12 @@
                 <td th:text="${student.id}"></td>
                 <td th:text="${student.name}"></td>
                 <td th:text="${student.task}"></td>
+                <td th:text="${student.description}"></td>
                 <td th:text="${student.isDone}"></td>
                 <td th:text="${student.createdAt}"></td>
                 <td>
-                    <button type="button" class="btn btn-primary update-btn" data-bs-toggle="modal" data-bs-target="#editStudentModal"
-                            data-id="${student.id}" data-name="${student.name}" data-task="${student.task}">
-                        Update
-                    </button>
-
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" th:data-bs-target="'#editStudentModal-' + ${student.id}"
+                            th:data-name="${student.name}" th:data-task="${student.task}">Update</button>
                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" th:data-bs-target="'#deleteStudentModal-' + ${student.id}">Delete</button>
                 </td>
             </tr>
@@ -67,6 +85,10 @@
                             <label for="task" class="form-label">Task</label>
                             <input type="text" class="form-control" id="task" th:field="*{task}" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <input type="text" class="form-control" id="description" th:field="*{description}" required>
+                        </div>
                         <!-- Add other necessary fields here -->
                         <button type="submit" class="btn btn-primary">Add</button>
                     </form>
@@ -76,7 +98,7 @@
     </div>
 
     <!-- Modal Update -->
-    <div class="modal fade" id="editStudentModal" tabindex="-1" aria-labelledby="editStudentModalLabel" aria-hidden="true">
+    <div th:each="student : ${students}" th:attr="id='editStudentModal-' + ${student.id}"  class="modal fade" tabindex="-1" aria-labelledby="editStudentModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -85,27 +107,27 @@
                 </div>
                 <div class="modal-body">
                     <!-- Add your form fields for editing a student here -->
-                    <form id="editStudentForm" action="/student/edit/{id}" method="post"> <!-- Include {id} placeholder -->
-                        <input type="hidden" id="studentId" name="id">
+                    <form th:action="@{/student/edit/{id}(id=${student.id})}" method="post" th:object="${student}">
                         <!-- Form fields -->
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="names" name="name" required>
+                            <input type="text" class="form-control" id="names" th:field="*{name}"  th:value="${student.name}"  required>
                         </div>
                         <div class="mb-3">
                             <label for="task" class="form-label">Task</label>
-                            <input type="text" class="form-control" id="tasks" name="task" required>
+                            <input type="text" class="form-control" id="tasks" th:field="*{task}" th:value="${student.task}"  required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <input type="text" class="form-control" id="description1" th:field="*{description}" required>
                         </div>
                         <!-- Add other necessary fields here -->
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </form>
-
                 </div>
             </div>
         </div>
     </div>
-
-
 
 
     <!-- Modal Delete -->
@@ -137,17 +159,6 @@
         $('#deleteStudentModal-' + studentId).modal('show');
     }
 </script>
-<script>
-    // Function to populate modal fields when update button is clicked
-    $('.update-btn').click(function () {
-        var id = $(this).data('id');
-        var name = $(this).data('name');
-        var task = $(this).data('task');
 
-        $('#studentId').val(id);
-        $('#name').val(name);
-        $('#task').val(task);
-    });
-</script>
 </body>
 </html>

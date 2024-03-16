@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -49,14 +50,45 @@ public class StudentServiceImp implements StudentService {
         students.removeIf(student -> student.getId().equals(id));
     }
 
+
     @Override
     public void updateStudent(Student updatedStudent) {
         List<Student> students = studentRepository.getStudents();
         for (int i = 0; i < students.size(); i++) {
             if (students.get(i).getId().equals(updatedStudent.getId())) {
+                Student studentToUpdate = students.get(i);
+                studentToUpdate.setName(updatedStudent.getName());
+                studentToUpdate.setTask(updatedStudent.getTask());
+                LocalDateTime now = LocalDateTime.now();
+                String formattedDateTime = now.format(formatter);
+                updatedStudent.setCreatedAt(formattedDateTime);
                 students.set(i, updatedStudent);
                 break;
             }
         }
     }
+
+    @Override
+    public List<Student> search(String task, Boolean isDone) {
+        List<Student> allStudents = studentRepository.getStudents();
+        List<Student> searchResults = new ArrayList<>();
+
+        for (Student student : allStudents) {
+            if ((task == null || task.isEmpty() || student.getTask().equals(task)) &&
+                    (isDone == null || student.isDone() == isDone)) {
+                searchResults.add(student);
+            }
+        }
+
+        return searchResults;
+    }
+
+    @Override
+    public List<Student> searchByTask(String task) {
+        List<Student> todoList = studentRepository.getStudents();
+        return todoList.stream()
+                .filter(todo -> todo.getTask().toLowerCase().contains(task.toLowerCase()))
+                .toList();
+    }
+
 }

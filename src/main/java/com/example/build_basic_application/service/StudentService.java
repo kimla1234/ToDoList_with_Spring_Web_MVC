@@ -11,6 +11,8 @@ public interface StudentService {
     public void addStudent(Student student);
     public void deleteStudent(Integer id);
     public void updateStudent(Student product);
+    List<Student> search(String task, Boolean isDone);
 
 
+    List<Student> searchByTask(String task);
 }
